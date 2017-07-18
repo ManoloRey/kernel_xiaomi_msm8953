@@ -359,7 +359,7 @@ int ipa_uc_ntn_conn_pipes(struct ipa_ntn_conn_in_params *inp,
 	if (result == -EINPROGRESS) {
 		if (wait_for_completion_timeout(&ntn_ctx->ntn_completion,
 			msecs_to_jiffies(10000)) == 0) {
-			IPA_UC_OFFLOAD_ERR("ETH_PROD resource req time out\n");
+			IPA_UC_OFFLOAD_ERR("ODU PROD resource req time out\n");
 			result = -EFAULT;
 			goto fail;
 		}
