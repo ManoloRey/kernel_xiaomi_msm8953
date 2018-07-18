@@ -1395,8 +1395,6 @@ static int dc_ilim_ma_table_8996[] = {
 	2200,
 	2300,
 	2400,
-	2500,
-	2600,
 };
 
 static const int fcc_comp_table_8994[] = {
@@ -1411,11 +1409,6 @@ static const int fcc_comp_table_8996[] = {
 	1100,
 	1200,
 	1500,
-	1600,
-	1800,
-	2000,
-	2500,
-	2600,
 };
 
 static const int aicl_rerun_period[] = {
@@ -7804,7 +7797,7 @@ err:
 }
 
 #define DEFAULT_VLED_MAX_UV		3500000
-#define DEFAULT_FCC_MA			2500
+#define DEFAULT_FCC_MA			2000
 static int smb_parse_dt(struct smbchg_chip *chip)
 {
 	int rc = 0, ocp_thresh = -EINVAL;

@@ -203,9 +203,9 @@
 			compatible = "qcom,qpnp-smbcharger";
 			#address-cells = <1>;
 			#size-cells = <1>;
-			qcom,iterm-ma = <200>;
+			qcom,iterm-ma = <100>;
 			qcom,float-voltage-mv = <4400>;
-			qcom,resume-delta-mv = <50>;
+			qcom,resume-delta-mv = <200>;
 			qcom,chg-inhibit-fg;
 			qcom,rparasitics-uohm = <100000>;
 			qcom,bms-psy-name = "bms";
@@ -317,12 +317,12 @@
 			compatible = "qcom,qpnp-fg";
 			#address-cells = <1>;
 			#size-cells = <1>;
-			qcom,resume-soc-raw = <254>;
+			qcom,resume-soc = <95>;
 			status = "okay";
 			qcom,bcl-lm-threshold-ma = <127>;
 			qcom,bcl-mh-threshold-ma = <405>;
-			qcom,fg-iterm-ma = <300>;
-			qcom,fg-chg-iterm-ma = <200>;
+			qcom,fg-iterm-ma = <150>;
+			qcom,fg-chg-iterm-ma = <100>;
 			qcom,pmic-revid = <&pmi8950_revid>;
 			qcom,fg-cutoff-voltage-mv = <3400>;
 			qcom,cycle-counter-en;
