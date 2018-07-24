@@ -1,7 +1,8 @@
 #!/bin/bash
-
+#
+# LH Kernel Universal Build Script for Arm64 Kernels
+#
 # Copyright (C) 2018 Luan Halaiko (tecnotailsplays@gmail.com)
-#                    Abubakar Yagob (abubakaryagob@gmail.com)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,98 +34,46 @@ KERN_IMG=$KERNEL_DIR/out/arch/arm64/boot/Image.gz-dtb
 ZIP_DIR=$KERNEL_DIR/Zipper
 CONFIG_DIR=$KERNEL_DIR/arch/arm64/configs
 
-
-#clang
-export CLANG_COMPILE=true
-export CLANG_TRIPLE=aarch64-linux-gnu-
-
-#Exports
+#Export
+export CROSS_COMPILE="$HOME/kernel/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="ManoloRey"
 export KBUILD_BUILD_HOST="Universe"
+export CLANG_COMPILE=true
+
+#Out folder
+mkdir -p out
 
 #Misc
 CONFIG=vince_defconfig
-THREAD="-j16"
+THREAD="O=out -j$(grep -c ^processor /proc/cpuinfo)"
+OUT="O=out"
 
 #Main script
 while true; do
-echo -e "\n$green[1] Build Kernel"
-echo -e "[2] Regenerate defconfig"
-echo -e "[3] Source cleanup"
-echo -e "[4] Create flashable zip"
-echo -e "[5] Upload Created Zip File"
-echo -e "$red[6] Quit$nc"
-echo -ne "\n$brown(i) Please enter a choice[1-6]:$nc "
+echo -e "\n$green[1]Build Kernel"
+echo -e "[2]Regenerate defconfig"
+echo -e "[3]Source cleanup"
+echo -e "[4]Create flashable zip"
+echo -e "[5]Quit$nc"
+echo -ne "\n$brown(i)Please enter a choice[1-5]:$nc "
 
 read choice
 
 if [ "$choice" == "1" ]; then
-  echo -e "\n$green[1] Non-Treble"
-  echo -e "[2] Treble"
-  echo -ne "\n$brown(i) Select Kernel Variant[1-2]:$nc "
-read type
-  if [[ "$type" == "1" ]]; then
-    #change branch to non treble before proceeding
-    git checkout vince &>/dev/null
-    echo -e "$blue\nSwitched to Non-Treble Branch"
-  fi
-
-  if [[ "$type" == "2" ]]; then
-    #change branch to  treble before proceeding
-    git checkout vince-treble &>/dev/null
-    echo -e "$blue\nSwitched to Treble Branch"
-  fi
-
-echo -e "\n$green[1] Stock GCC"
-echo -e "[2] Custom GCC"
-echo -e "[3] Stock Clang"
-echo -e "[4] DragonTC"
-echo -ne "\n$brown(i) Select Toolchain[1-4]:$nc "
-read TC
-BUILD_START=$(date +"%s")
-DATE=`date`
-echo -e "\n$cyan#######################################################################$nc"
-echo -e "$brown(i) Build started at $DATE$nc"
-
-  if [[ "$TC" == "1" ]]; then
-  export CROSS_COMPILE="$PWD/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
-  make  O=out $CONFIG $THREAD &>/dev/null
-  make  O=out $THREAD &>Buildlog.txt & pid=$!
-  fi
-
-  if [[ "$TC" == "2" ]]; then
-  export CROSS_COMPILE="$PWD/toolchains/linaro8/bin/aarch64-opt-linux-android-"
-  make  O=out $CONFIG $THREAD &>/dev/null
-  make  O=out $THREAD &>Buildlog.txt & pid=$!
-  fi
-
-  if [[ "$TC" == "3" ]]; then
-  export CLANG_PATH="$PWD/toolchains/clang-r328903"
-  export PATH=${CLANG_PATH}:${PATH}
-  make O=out $CONFIG $THREAD &>/dev/null  \
-               CC="$PWD/toolchains/clang-r328903/bin/clang"  \
-               CROSS_COMPILE="$PWD/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
-  make O=out $THREAD &>Buildlog.txt & pid=$! \
-               CC="$PWD/toolchains/linux-x86/clang-4053586/bin/clang"  \
-               CROSS_COMPILE="$PWD/toolchains/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-" 
-
-  fi
-
-  if [[ "$TC" == "4" ]]; then
-  export CLANG_PATH="$PWD/toolchains/dragontc-7.0"
-  export PATH=${CLANG_PATH}:${PATH}
-  make O=out $CONFIG $THREAD &>/dev/null \
-  CC="$PWD/toolchains/dragontc-7.0/bin/clang"
-  make CC="$PWD/toolchains/dragontc-7.0/bin/clang" O=out $THREAD &>Buildlog.txt & pid=$! 
-  fi
+  BUILD_START=$(date +"%s")
+  DATE=`date`
+  echo -e "\n$cyan#######################################################################$nc"
+  echo -e "$purple(i)Build has been started at $DATE$nc"
+  make $CONFIG $OUT &>/dev/null
+  make $THREAD &>Buildlog.txt & pid=$!
   spin[0]="$blue-"
   spin[1]="\\"
   spin[2]="|"
   spin[3]="/$nc"
 
-  echo -ne "\n$blue[Please wait...] ${spin[0]}$nc"
+  echo -ne "$blue[Please wait...] ${spin[0]}$nc"
   while kill -0 $pid &>/dev/null
   do
     for i in "${spin[@]}"
@@ -133,37 +82,34 @@ echo -e "$brown(i) Build started at $DATE$nc"
           sleep 0.1
     done
   done
-
   if ! [ -a $KERN_IMG ]; then
-    echo -e "\n$red(!) Kernel compilation failed, See buildlog to fix errors $nc"
+    echo -e "\n$red(!)Kernel compilation failed, check buildlog to fix errors $nc"
     echo -e "$red#######################################################################$nc"
     exit 1
   fi
   $DTBTOOL -2 -o $KERNEL_DIR/arch/arm/boot/dt.img -s 2048 -p $KERNEL_DIR/scripts/dtc/ $KERNEL_DIR/arch/arm/boot/dts/ &>/dev/null &>/dev/null
-
   BUILD_END=$(date +"%s")
   DIFF=$(($BUILD_END - $BUILD_START))
   echo -e "\n$brown(i)Image-dtb compiled successfully.$nc"
   echo -e "$cyan#######################################################################$nc"
-  echo -e "$purple(i) Total time elapsed: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$nc"
+  echo -e "$purple(i)Total time elapsed: $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$nc"
   echo -e "$cyan#######################################################################$nc"
 fi
 
 if [ "$choice" == "2" ]; then
   echo -e "\n$cyan#######################################################################$nc"
-  make O=out  $CONFIG
+  make $CONFIG
   cp .config arch/arm64/configs/$CONFIG
-  echo -e "$purple(i) Defconfig generated.$nc"
+  echo -e "$purple(i)Defconfig regenerated.$nc"
   echo -e "$cyan#######################################################################$nc"
 fi
 
 if [ "$choice" == "3" ]; then
   echo -e "\n$cyan#######################################################################$nc"
   rm -f $DT_IMG
-  make O=out clean &>/dev/null
+  make clean &>/dev/null
   make mrproper &>/dev/null
-  rm -rf out/*
-  echo -e "$purple(i) Kernel source cleaned up.$nc"
+  echo -e "$purple(i)Kernel source cleaned up.$nc"
   echo -e "$cyan#######################################################################$nc"
 fi
 
@@ -173,35 +119,15 @@ if [ "$choice" == "4" ]; then
   cd $ZIP_DIR
   make clean &>/dev/null
   cp $KERN_IMG $ZIP_DIR/boot/zImage
-  if [[ "$type" == "1" && "$TC" == "1" || "$TC" == "2" ]]; then
-    make normal &>/dev/null
-  fi
-  if [[ "$type" == "1" && "$TC" == "3" || "$TC" == "4" ]]; then
-    make nclang &>/dev/null
-  fi
-  if [[ "$type" == "2" && "$TC" == "1" || "$TC" == "2" ]]; then
-    make treble &>/dev/null
-  fi
-    if [[ "$type" == "2" && "$TC" == "3" || "$TC" == "4" ]]; then
-    make tclang &>/dev/null
-  fi
+  make &>/dev/null
+  make sign &>/dev/null
   cd ..
-  echo -e "$purple(i) Flashable zip generated under $ZIP_DIR.$nc"
+  echo -e "$purple(i)Flashable zip generated under $ZIP_DIR.$nc"
   echo -e "$cyan#######################################################################$nc"
 fi
 
 
-if [[ "$choice" == "5" ]]; then
-  echo -e "\n$cyan#######################################################################$nc"
-  cd $ZIP_DIR
-  gdrive upload Universe*.zip &>/dev/null
-  cd ..
-  echo -e "$purple(i) Zip uploaded Sucessfully!"
-  echo -e "$cyan#######################################################################$nc" 
-fi
-
-if [ "$choice" == "6" ]; then
+if [ "$choice" == "5" ]; then
  exit 1
 fi
 done
-

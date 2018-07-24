@@ -1,11 +1,9 @@
-
-ui_print ("================================");
-ui_print("  Universe Kernel By ManoloRey   ");
-ui_print ("================================");
-
-ui_print(" * Device: Redmi Note 5/5 Plus(vince)");
-ui_print(" * Version: V1 ");
-
+assert(getprop("ro.product.device") == "vince" || getprop("ro.build.product") == "vince" || abort("E3004: This package is for device: vince; this device is " + getprop("ro.product.device") + "."););
+ui_print("===================================");
+ui_print("|          Universe Kernel        |");
+ui_print("|_________________________________|");
+ui_print("|       Redmi 5Plus | Vince       |");
+ui_print("===================================");
 show_progress(1.000000, 0);
 package_extract_dir("tools", "/tmp");
 package_extract_dir("boot", "/tmp");
@@ -14,28 +12,23 @@ set_metadata("/tmp/mkbootimg.sh", "uid", 0, "gid", 0, "mode", 0777);
 set_metadata("/tmp/mkbootimg", "uid", 0, "gid", 0, "mode", 0777);
 set_metadata("/tmp/unpackbootimg", "uid", 0, "gid", 0, "mode", 0777);
 set_progress(0.100000);
-ui_print(" * Dumping boot.img");
+ui_print(" * Dump boot.img");
 run_program("/tmp/busybox", "dd", "if=/dev/block/bootdevice/by-name/boot", "of=/tmp/boot.img");
 set_progress(0.300000);
-ui_print(" * Unpacking boot.img");
+ui_print(" * Unpack boot.img");
 run_program("/tmp/unpackbootimg", "-i", "/tmp/boot.img", "-o", "/tmp/");
 set_progress(0.400000);
-ui_print(" * repacking new boot.img");
+ui_print(" * repack newboot.img");
 run_program("/tmp/mkbootimg.sh");
 set_progress(0.500000);
-ui_print(" * Flashing new boot.img");
+ui_print(" * Flashing newboot.img");
 run_program("/tmp/busybox", "dd", "if=/tmp/newboot.img", "of=/dev/block/bootdevice/by-name/boot");
 set_progress(0.900000);
 delete_recursive("/tmp/");
-ui_print(" * Sucessfully Flashed New Boot.img");
-
-ui_print(" * Installing Darkness Control Kernel Manager");
-package_extract_dir("system", "/system");
-ui_print(" * Setting permissions");
-set_perm_recursive(0, 0, 0755, 0644, "/system/priv-app/Darkness-control");
-ui_print(" * App installed successfuly");
-
-ui_print ("================================");
-ui_print("     Explore the Universe!!     ");
-ui_print("=================================");
+ui_print("===================================");
+ui_print("|      Explore the Universe!!     |");
+ui_print("===================================");
+ui_print("===================================");
+ui_print("|   Copyright (C) 2018 ManoloRey  |");
+ui_print("===================================");
 set_progress(1.000000);
