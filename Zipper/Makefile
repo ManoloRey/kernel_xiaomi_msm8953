@@ -1,9 +1,9 @@
-NAME ?= Dark-Ages
+NAME ?= Universe
 
 
 DATE := $(shell date "+%d%m%Y-%I%M")
 
-CODE := Segundo
+CODE := V1
 
 ZIP := $(NAME)-$(CODE)-$(DATE).zip
 CZIP := $(NAME)-$(CODE)-Clang-$(DATE).zip

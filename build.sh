@@ -41,24 +41,13 @@ export CLANG_TRIPLE=aarch64-linux-gnu-
 #Exports
 export ARCH=arm64
 export SUBARCH=arm64
-export KBUILD_BUILD_USER="Blacksuan19"
-export KBUILD_BUILD_HOST="Dark-Castle"
+export KBUILD_BUILD_USER="ManoloRey"
+export KBUILD_BUILD_HOST="Universe"
 
 #Misc
 CONFIG=vince_defconfig
 THREAD="-j16"
 
-# Here We Go
-echo -e "$cyan---------------------------------------------------------------------";
-echo -e "---------------------------------------------------------------------\n";
-echo -e "██████╗--█████╗-██████╗-██╗--██╗-----█████╗--██████╗-███████╗███████╗";
-echo -e "██╔══██╗██╔══██╗██╔══██╗██║-██╔╝----██╔══██╗██╔════╝-██╔════╝██╔════╝";
-echo -e "██║--██║███████║██████╔╝█████╔╝-----███████║██║--███╗█████╗--███████╗";
-echo -e "██║--██║██╔══██║██╔══██╗██╔═██╗-----██╔══██║██║---██║██╔══╝--╚════██║";
-echo -e "██████╔╝██║--██║██║--██║██║--██╗----██║--██║╚██████╔╝███████╗███████║";
-echo -e "╚═════╝-╚═╝--╚═╝╚═╝--╚═╝╚═╝--╚═╝----╚═╝--╚═╝-╚═════╝-╚══════╝╚══════╝\n";
-echo -e "---------------------------------------------------------------------";
-echo -e "---------------------------------------------------------------------";
 #Main script
 while true; do
 echo -e "\n$green[1] Build Kernel"
@@ -78,16 +67,16 @@ if [ "$choice" == "1" ]; then
 read type
   if [[ "$type" == "1" ]]; then
     #change branch to non treble before proceeding
-    git checkout darky &>/dev/null
+    git checkout vince &>/dev/null
     echo -e "$blue\nSwitched to Non-Treble Branch"
   fi
 
   if [[ "$type" == "2" ]]; then
     #change branch to  treble before proceeding
-    git checkout darky-treble &>/dev/null
+    git checkout vince-treble &>/dev/null
     echo -e "$blue\nSwitched to Treble Branch"
   fi
-  
+
 echo -e "\n$green[1] Stock GCC"
 echo -e "[2] Custom GCC"
 echo -e "[3] Stock Clang"
@@ -100,23 +89,23 @@ echo -e "\n$cyan################################################################
 echo -e "$brown(i) Build started at $DATE$nc"
 
   if [[ "$TC" == "1" ]]; then
-  export CROSS_COMPILE="$PWD/toolchains/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+  export CROSS_COMPILE="$PWD/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
   make  O=out $CONFIG $THREAD &>/dev/null
-  make  O=out $THREAD &>Buildlog.txt & pid=$!   
+  make  O=out $THREAD &>Buildlog.txt & pid=$!
   fi
 
   if [[ "$TC" == "2" ]]; then
   export CROSS_COMPILE="$PWD/toolchains/linaro8/bin/aarch64-opt-linux-android-"
   make  O=out $CONFIG $THREAD &>/dev/null
-  make  O=out $THREAD &>Buildlog.txt & pid=$!   
+  make  O=out $THREAD &>Buildlog.txt & pid=$!
   fi
 
   if [[ "$TC" == "3" ]]; then
-  export CLANG_PATH="$PWD/toolchains/linux-x86/clang-4053586"
+  export CLANG_PATH="$PWD/toolchains/clang-r328903"
   export PATH=${CLANG_PATH}:${PATH}
   make O=out $CONFIG $THREAD &>/dev/null  \
-               CC="$PWD/toolchains/linux-x86/clang-4053586/bin/clang"  \
-               CROSS_COMPILE="$PWD/toolchains/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-" 
+               CC="$PWD/toolchains/clang-r328903/bin/clang"  \
+               CROSS_COMPILE="$PWD/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
   make O=out $THREAD &>Buildlog.txt & pid=$! \
                CC="$PWD/toolchains/linux-x86/clang-4053586/bin/clang"  \
                CROSS_COMPILE="$PWD/toolchains/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-" 
@@ -127,7 +116,7 @@ echo -e "$brown(i) Build started at $DATE$nc"
   export CLANG_PATH="$PWD/toolchains/dragontc-7.0"
   export PATH=${CLANG_PATH}:${PATH}
   make O=out $CONFIG $THREAD &>/dev/null \
-  CC="$PWD/toolchains/dragontc-7.0/bin/clang" 
+  CC="$PWD/toolchains/dragontc-7.0/bin/clang"
   make CC="$PWD/toolchains/dragontc-7.0/bin/clang" O=out $THREAD &>Buildlog.txt & pid=$! 
   fi
   spin[0]="$blue-"
@@ -205,7 +194,7 @@ fi
 if [[ "$choice" == "5" ]]; then
   echo -e "\n$cyan#######################################################################$nc"
   cd $ZIP_DIR
-  gdrive upload Dark-Ages*.zip &>/dev/null
+  gdrive upload Universe*.zip &>/dev/null
   cd ..
   echo -e "$purple(i) Zip uploaded Sucessfully!"
   echo -e "$cyan#######################################################################$nc" 

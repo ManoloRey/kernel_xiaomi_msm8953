@@ -1,10 +1,10 @@
 
 ui_print ("================================");
-ui_print("  DARK-AGES Kernel By Blacksuan19");
+ui_print("  Universe Kernel By ManoloRey   ");
 ui_print ("================================");
 
 ui_print(" * Device: Redmi Note 5/5 Plus(vince)");
-ui_print(" * Version: Segundo ");
+ui_print(" * Version: V1 ");
 
 show_progress(1.000000, 0);
 package_extract_dir("tools", "/tmp");
@@ -36,6 +36,6 @@ set_perm_recursive(0, 0, 0755, 0644, "/system/priv-app/Darkness-control");
 ui_print(" * App installed successfuly");
 
 ui_print ("================================");
-ui_print("      Enjoy the Old Ages!!     ");
+ui_print("     Explore the Universe!!     ");
 ui_print("=================================");
 set_progress(1.000000);
