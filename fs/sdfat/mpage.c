@@ -604,4 +604,3 @@ int sdfat_mpage_writepages(struct address_space *mapping,
 }
 
 #endif /* CONFIG_SDFAT_ALIGNED_MPAGE_WRITE */
-
