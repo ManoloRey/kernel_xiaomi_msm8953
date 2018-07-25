@@ -3,6 +3,7 @@
 # LH Kernel Universal Build Script for Arm64 Kernels
 #
 # Copyright (C) 2018 Luan Halaiko (tecnotailsplays@gmail.com)
+# Copyright (C) 2018 ManoloRey
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,20 +36,31 @@ ZIP_DIR=$KERNEL_DIR/Zipper
 CONFIG_DIR=$KERNEL_DIR/arch/arm64/configs
 
 #Export
-export CROSS_COMPILE="$HOME/kernel/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="ManoloRey"
 export KBUILD_BUILD_HOST="Universe"
-export CLANG_COMPILE=true
 
 #Out folder
 mkdir -p out
 
 #Misc
 CONFIG=vince_defconfig
-THREAD="O=out -j$(grep -c ^processor /proc/cpuinfo)"
+THREAD="-j6"
 OUT="O=out"
+
+# Here We Go
+echo -e "$cyan---------------------------------------------------------------------";
+echo -e "---------------------------------------------------------------------\n";
+echo -e "##::::'##:'##::: ##:'####:'##::::'##:'########:'########:::'######::'########:";
+echo -e "##:::: ##: ###:: ##:. ##:: ##:::: ##: ##.....:: ##.... ##:'##... ##: ##.....::";
+echo -e "##:::: ##: ####: ##:: ##:: ##:::: ##: ##::::::: ##:::: ##: ##:::..:: ##:::::::";
+echo -e "##:::: ##: ## ## ##:: ##:: ##:::: ##: ######::: ########::. ######:: ######:::";
+echo -e "##:::: ##: ##. ####:: ##::. ##:: ##:: ##...:::: ##.. ##::::..... ##: ##...::::";
+echo -e "##:::: ##: ##:. ###:: ##:::. ## ##::: ##::::::: ##::. ##::'##::: ##: ##:::::::";
+echo -e " #######:: ##::. ##:'####:::. ###:::: ########: ##:::. ##:. ######:: ########:";
+echo -e "---------------------------------------------------------------------\n";
+echo -e "---------------------------------------------------------------------";
 
 #Main script
 while true; do
@@ -56,18 +68,46 @@ echo -e "\n$green[1]Build Kernel"
 echo -e "[2]Regenerate defconfig"
 echo -e "[3]Source cleanup"
 echo -e "[4]Create flashable zip"
-echo -e "[5]Quit$nc"
+echo -e "[5] Upload Created Zip File"
+echo -e "[6]Quit$nc"
 echo -ne "\n$brown(i)Please enter a choice[1-5]:$nc "
 
 read choice
 
 if [ "$choice" == "1" ]; then
-  BUILD_START=$(date +"%s")
-  DATE=`date`
-  echo -e "\n$cyan#######################################################################$nc"
-  echo -e "$purple(i)Build has been started at $DATE$nc"
-  make $CONFIG $OUT &>/dev/null
-  make $THREAD &>Buildlog.txt & pid=$!
+echo -e "\n$green[1] Stock GCC"
+echo -e "[2] Custom GCC"
+echo -e "[3] Stock Clang"
+echo -ne "\n$brown(i) Select Toolchain[1-4]:$nc "
+read TC
+BUILD_START=$(date +"%s")
+DATE=`date`
+echo -e "\n$cyan#######################################################################$nc"
+echo -e "$brown(i) Build started at $DATE$nc"
+
+  if [[ "$TC" == "1" ]]; then
+  export CROSS_COMPILE="$PWD/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+  make  O=out $CONFIG $THREAD &>/dev/null
+  make  O=out $THREAD &>Buildlog.txt & pid=$!
+  fi
+
+  if [[ "$TC" == "2" ]]; then
+  export CROSS_COMPILE="$PWD/toolchains/linaro8/bin/aarch64-opt-linux-android-"
+  make  O=out $CONFIG $THREAD &>/dev/null
+  make  O=out $THREAD &>Buildlog.txt & pid=$!
+  fi
+
+  if [[ "$TC" == "3" ]]; then
+  export CLANG_PATH="$PWD/toolchains/linux-x86/clang-r328903/bin"
+  export PATH=${CLANG_PATH}:${PATH}
+  export CLANG_TRIPLE=aarch64-linux-gnu-
+  export CLANG_COMPILE=true
+  export TCHAIN_PATH="$PWD/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+  export CROSS_COMPILE="${CCACHE} ${TCHAIN_PATH}"
+  export CLANG_TCHAIN="$PWD/toolchains/linux-x86/clang-r328903"
+  export KBUILD_COMPILER_STRING= Android clang version 7.0.2
+
+fi
   spin[0]="$blue-"
   spin[1]="\\"
   spin[2]="|"
@@ -117,6 +157,7 @@ fi
 if [ "$choice" == "4" ]; then
   echo -e "\n$cyan#######################################################################$nc"
   cd $ZIP_DIR
+  mkdir boot
   make clean &>/dev/null
   cp $KERN_IMG $ZIP_DIR/boot/zImage
   make &>/dev/null
@@ -126,8 +167,16 @@ if [ "$choice" == "4" ]; then
   echo -e "$cyan#######################################################################$nc"
 fi
 
+if [[ "$choice" == "5" ]]; then
+  echo -e "\n$cyan#######################################################################$nc"
+  cd $ZIP_DIR
+  gdrive upload Universe-Kernel*.zip &>/dev/null
+  cd ..
+  echo -e "$purple(i) Zip uploaded Sucessfully!"
+  echo -e "$cyan#######################################################################$nc" 
+fi
 
-if [ "$choice" == "5" ]; then
+if [ "$choice" == "6" ]; then
  exit 1
 fi
 done
