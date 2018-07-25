@@ -68,9 +68,9 @@ echo -e "\n$green[1]Build Kernel"
 echo -e "[2]Regenerate defconfig"
 echo -e "[3]Source cleanup"
 echo -e "[4]Create flashable zip"
-echo -e "[5] Upload Created Zip File"
+echo -e "[5]Upload Created Zip File"
 echo -e "[6]Quit$nc"
-echo -ne "\n$brown(i)Please enter a choice[1-5]:$nc "
+echo -ne "\n$brown(i)Please enter a choice[1-6]:$nc "
 
 read choice
 
@@ -78,7 +78,7 @@ if [ "$choice" == "1" ]; then
 echo -e "\n$green[1] Stock GCC"
 echo -e "[2] Custom GCC"
 echo -e "[3] Stock Clang"
-echo -ne "\n$brown(i) Select Toolchain[1-4]:$nc "
+echo -ne "\n$brown(i) Select Toolchain[1-3]:$nc "
 read TC
 BUILD_START=$(date +"%s")
 DATE=`date`
@@ -98,14 +98,13 @@ echo -e "$brown(i) Build started at $DATE$nc"
   fi
 
   if [[ "$TC" == "3" ]]; then
-  export CLANG_PATH="$PWD/toolchains/linux-x86/clang-r328903/bin"
+  export CLANG_COMPILE=true
+  export CLANG_PATH="$PWD/toolchains/linux-x86/clang-r328903"
   export PATH=${CLANG_PATH}:${PATH}
   export CLANG_TRIPLE=aarch64-linux-gnu-
-  export CLANG_COMPILE=true
-  export TCHAIN_PATH="$PWD/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
-  export CROSS_COMPILE="${CCACHE} ${TCHAIN_PATH}"
-  export CLANG_TCHAIN="$PWD/toolchains/linux-x86/clang-r328903"
-  export KBUILD_COMPILER_STRING= Android clang version 7.0.2
+  export CROSS_COMPILE="$PWD/toolchains/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+  make CC="$PWD/toolchains/linux-x86/clang-r328903/bin/clang" O=out $CONFIG $THREAD &>/dev/null
+  make CC="$PWD/toolchains/linux-x86/clang-r328903/bin/clang" O=out $THREAD &>Buildlog.txt & pid=$!
 
 fi
   spin[0]="$blue-"
