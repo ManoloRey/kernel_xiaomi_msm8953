@@ -1,4 +1,4 @@
-NAME ?= Universe-Kernel
+NAME ?= Universe-Kernel-Treble
 
 VERSION ?= V1
 
