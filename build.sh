@@ -169,7 +169,7 @@ fi
 if [[ "$choice" == "5" ]]; then
   echo -e "\n$cyan#######################################################################$nc"
   cd $ZIP_DIR
-  gdrive upload Universe-Kerne-Treblel*.zip &>/dev/null
+  gdrive upload Universe-Kernel-Treble*.zip &>/dev/null
   cd ..
   echo -e "$purple(i) Zip uploaded Sucessfully!"
   echo -e "$cyan#######################################################################$nc" 
